@@ -2,7 +2,7 @@
   "name": "go-stations",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "repository": "https://github.com/TechBowl-japan/go-stations.git",
   "author": "Hikaru Terazono (3c1u) <3c1u@tohkani.com>",
   "dependencies": {
