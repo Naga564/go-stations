@@ -10,8 +10,7 @@ import (
 )
 
 // A HealthzHandler implements health check endpoint.
-type HealthzHandler struct{
-	ServeHTTP(http.ResponseWriter ,*http.Request)
+type HealthzHandler struct {
 }
 
 // NewHealthzHandler returns HealthzHandler based http.Handler.
