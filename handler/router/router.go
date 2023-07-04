@@ -12,6 +12,7 @@ func NewRouter(todoDB *sql.DB) *http.ServeMux {
 	mux := http.NewServeMux()
 	//mux.Handle("http://localhost:8080/healthz", http.HandleFunc(http.Handler.ServeHTTP()))
 	//mux.Handle("http://localhost:8080/healthz", http.Handler.HealthzHandler)
-	mux.HandleFunc("http://localhost:8080/healthz", handler.ServeHTTP)
+	mux.HandleFunc("http://localhost:8080/healthz", handler.HealthzHandler)
+	//mux.HandleFunc("http://localhost:8080/healthz", handler.HealthzHandler)
 	return mux
 }

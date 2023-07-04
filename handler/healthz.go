@@ -10,7 +10,9 @@ import (
 )
 
 // A HealthzHandler implements health check endpoint.
-type HealthzHandler struct{}
+type HealthzHandler struct{
+	ServeHTTP(http.ResponseWriter ,*http.Request)
+}
 
 // NewHealthzHandler returns HealthzHandler based http.Handler.
 func NewHealthzHandler() *HealthzHandler {
