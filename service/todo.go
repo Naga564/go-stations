@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"log"
 
 	"github.com/TechBowl-japan/go-stations/model"
@@ -27,35 +28,51 @@ func (s *TODOService) CreateTODO(ctx context.Context, subject, description strin
 		confirm = `SELECT subject, description, created_at, updated_at FROM todos WHERE id = ?`
 	)
 
-	//todoを保存する流れ
+	//戻り値構造体を有効化
+	response := model.CreateTODOResponse{}
+
+	if subject == "" {
+		log.Println("Subject empty")
+
+		//エラーコード400を返す
+		// return
+	}
+
+	//descriptionが適切かどうか判定
+	// if description = ""{
+
+	//エラーコード400を返す
+	// return
+	// }
 
 	//ステートメント(準備)の定義
-	todo := TODOService{}
-	request := model.CreateTODORequest{}
 
-	stmt, err := todo.db.PrepareContext(ctx, insert)
-
+	stmt, err := s.db.PrepareContext(ctx, insert)
 	if err != nil {
 		//エラーハンドリング
-		log.Println(err)
+		log.Println("err")
 	}
-	log.Println(stmt)
 
 	//実行する
-	result, err := todo.db.ExecContext(ctx, insert)
+	result, err := s.db.ExecContext(ctx, insert, subject, description)
 	//result, err := stmt.ExecContext(ctx, stmt)
 	if err != nil {
 		//エラーハンドリング
-		log.Println(err)
+		log.Println("err")
 	}
+	log.Println("stmt:::")
+	log.Println(stmt)
+	log.Println("ID:::")
+	//log.Println(result.LastInsertId())
 	log.Println(result)
 
-	//確認する
-	todo.db.QueryRowContext(ctx, confirm)
+	//確認する(引数にidが必要)
+	row := s.db.QueryRowContext(ctx, confirm)
 
 	//値を返す
-
-	return nil, nil
+	response.TODO = row
+	err := json.NewEncoder(w).Encode(response)
+	// return nil, nil
 }
 
 // ReadTODO reads TODOs on DB.
