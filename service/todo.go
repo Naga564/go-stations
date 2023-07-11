@@ -27,6 +27,9 @@ func (s *TODOService) CreateTODO(ctx context.Context, subject, description strin
 		confirm = `SELECT subject, description, created_at, updated_at FROM todos WHERE id = ?`
 	)
 
+	//todoを保存する流れ
+
+	//ステートメント(準備)の定義
 	todo := TODOService{}
 	responce := model.CreateTODOResponse{}
 
@@ -38,32 +41,29 @@ func (s *TODOService) CreateTODO(ctx context.Context, subject, description strin
 	}
 	defer log.Println("error")
 
-	//クエリの準備
 	stmt, err := todo.db.PrepareContext(ctx, insert)
 	if err != nil {
 		//エラーハンドリング
-		log.Println(err)
-	}
+		log.Println("err")
+	
 
 	//実行する
-	result, err := stmt.ExecContext(ctx, subject, description)
+	//result, err := todo.db.ExecContext(ctx, insert)
+	result, err := stmt.ExecContext(ctx, subject,description)
 	if err != nil {
 		//エラーハンドリング
-		log.Println(err)
+		log.Println("err")
 	}
-
+	// log.Println(result)
 	//IDをExecContextの結果から取得
 	id, err := result.LastInsertId()
-	if err != nil {
-		//エラーハンドリング
-		log.Println(err)
-	}
 
 	//確認する
-	row := todo.db.QueryRowContext(ctx, confirm, id)
+	todo.db.QueryRowContext(ctx, confirm,id)
 	row.Scan(&responce)
 
 	//値を返す
+
 	return &responce.TODO, nil
 }
 
