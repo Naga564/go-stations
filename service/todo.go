@@ -45,11 +45,11 @@ func (s *TODOService) CreateTODO(ctx context.Context, subject, description strin
 	if err != nil {
 		//エラーハンドリング
 		log.Println("err")
-	
+	}
 
 	//実行する
 	//result, err := todo.db.ExecContext(ctx, insert)
-	result, err := stmt.ExecContext(ctx, subject,description)
+	result, err := stmt.ExecContext(ctx, subject, description)
 	if err != nil {
 		//エラーハンドリング
 		log.Println("err")
@@ -59,7 +59,7 @@ func (s *TODOService) CreateTODO(ctx context.Context, subject, description strin
 	id, err := result.LastInsertId()
 
 	//確認する
-	todo.db.QueryRowContext(ctx, confirm,id)
+	row := todo.db.QueryRowContext(ctx, confirm, id)
 	row.Scan(&responce)
 
 	//値を返す
