@@ -26,13 +26,6 @@ func (s *TODOService) CreateTODO(ctx context.Context, subject, description strin
 		confirm = `SELECT subject, description, created_at, updated_at FROM todos WHERE id = ?`
 	)
 
-	//引数チェック
-	// if subject == "" {
-	// 	//エラーコード400を返す
-	// 	// return nil, http.StatusBadRequest
-	// 	log.Println("error")
-	// }
-
 	stmt, err := s.db.PrepareContext(ctx, insert)
 	if err != nil {
 		//エラーハンドリング
