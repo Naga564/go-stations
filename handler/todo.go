@@ -47,14 +47,44 @@ func (h *TODOHandler) Delete(ctx context.Context, req *model.DeleteTODORequest) 
 }
 
 func (h *TODOHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	responce := &model.{
-		Message: "OK",
-	}
-	err := json.NewEncoder(w).Encode(responce)
+	request := &model.CreateTODORequest{}
+	responce := &model.CreateTODOResponse{}
 
-	//エラーハンドリング
-	if err != nil {
-		log.Println(err)
+	//POSTかどうかの判定
+	if r.Method == http.MethodPost {
+		//JSON DECODE
+		err := json.NewDecoder(r.Body).Decode(&request)
+		if err != nil {
+
+		}
+
+		//subjectが空文字かどうかを判定
+		if request.Subject == "" {
+			//空の場合
+			//400 BadRequestを返却
+			http.Error(w, "error", http.StatusBadRequest)
+		} else {
+			//空ではない場合
+			//(3)をやる(途中)
+			r.Context()
+			//APIを呼び出す
+			responce := service.CreateTODO()
+
+			err := json.NewEncoder(w).Encode(&responce)
+			//エラーハンドリング
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	} else {
+		//GETだったとき
 	}
+
+	// err := json.NewEncoder(w).Encode(responce)
+
+	// //エラーハンドリング
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 
 }
