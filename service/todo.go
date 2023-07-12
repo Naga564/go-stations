@@ -27,44 +27,47 @@ func (s *TODOService) CreateTODO(ctx context.Context, subject, description strin
 		confirm = `SELECT subject, description, created_at, updated_at FROM todos WHERE id = ?`
 	)
 
-	//todoを保存する流れ
-
-	//ステートメント(準備)の定義
-	todo := TODOService{}
-	responce := model.CreateTODOResponse{}
-
 	//引数チェック
 	if subject == "" {
 		//エラーコード400を返す
 		// return nil, http.StatusBadRequest
 		log.Println("error")
 	}
-	defer log.Println("error")
+	defer log.Println("ERROR")
 
-	stmt, err := todo.db.PrepareContext(ctx, insert)
+	stmt, err := s.db.PrepareContext(ctx, insert)
 	if err != nil {
 		//エラーハンドリング
-		log.Println("err")
+		return nil, err
 	}
+	stmt.Close()
 
 	//実行する
-	//result, err := todo.db.ExecContext(ctx, insert)
 	result, err := stmt.ExecContext(ctx, subject, description)
 	if err != nil {
 		//エラーハンドリング
-		log.Println("err")
+		return nil, err
 	}
-	// log.Println(result)
 	//IDをExecContextの結果から取得
 	id, err := result.LastInsertId()
+	if err != nil {
+		//エラーハンドリング
+		return nil, err
+	}
 
 	//確認する
-	row := todo.db.QueryRowContext(ctx, confirm, id)
-	row.Scan(&responce)
+	todo := &model.TODO{}
+	err = s.db.QueryRowContext(ctx, confirm, id).Scan(&todo.Subject, &todo.Description, &todo.CreatedAt, &todo.UpdatedAt)
+	//err = row.Scan(&todo.ID, &todo.Subject, &todo.Description, &todo.CreatedAt, &todo.UpdatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
 
 	//値を返す
-
-	return &responce.TODO, nil
+	return todo, nil
 }
 
 // ReadTODO reads TODOs on DB.
