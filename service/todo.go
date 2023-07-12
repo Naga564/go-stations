@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"github.com/TechBowl-japan/go-stations/model"
 )
@@ -28,19 +27,18 @@ func (s *TODOService) CreateTODO(ctx context.Context, subject, description strin
 	)
 
 	//引数チェック
-	if subject == "" {
-		//エラーコード400を返す
-		// return nil, http.StatusBadRequest
-		log.Println("error")
-	}
-	defer log.Println("ERROR")
+	// if subject == "" {
+	// 	//エラーコード400を返す
+	// 	// return nil, http.StatusBadRequest
+	// 	log.Println("error")
+	// }
 
 	stmt, err := s.db.PrepareContext(ctx, insert)
 	if err != nil {
 		//エラーハンドリング
 		return nil, err
 	}
-	stmt.Close()
+	defer stmt.Close()
 
 	//実行する
 	result, err := stmt.ExecContext(ctx, subject, description)
