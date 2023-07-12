@@ -68,13 +68,16 @@ func (h *TODOHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			//(3)をやる(途中)
 			r.Context()
 			//APIを呼び出す
-			responce := service.CreateTODO()
+			responce = 
 
+			//戻ってきたものをエンコード
 			err := json.NewEncoder(w).Encode(&responce)
 			//エラーハンドリング
 			if err != nil {
 				log.Println(err)
 			}
+			//正常終了
+			w.WriteHeader(http.StatusOK)
 		}
 	} else {
 		//GETだったとき
