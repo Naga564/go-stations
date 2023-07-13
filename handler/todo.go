@@ -55,7 +55,7 @@ func (h *TODOHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		//JSON DECODE
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
-
+			http.Error(w, "error", http.StatusBadRequest)
 		}
 
 		//subjectが空文字かどうかを判定
@@ -68,7 +68,7 @@ func (h *TODOHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			//(3)をやる(途中)
 			r.Context()
 			//APIを呼び出す
-			responce = 
+			//responce =
 
 			//戻ってきたものをエンコード
 			err := json.NewEncoder(w).Encode(&responce)
