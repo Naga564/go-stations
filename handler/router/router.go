@@ -15,7 +15,7 @@ func NewRouter(todoDB *sql.DB) *http.ServeMux {
 	mux.Handle("/healthz", handler.NewHealthzHandler())
 
 	//todo
-	mux.Handle("http://localhost:8080/todos", handler.NewTODOHandler(service.NewTODOService(todoDB)))
+	mux.Handle("/todos", handler.NewTODOHandler(service.NewTODOService(todoDB)))
 
 	return mux
 }

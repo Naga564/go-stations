@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/TechBowl-japan/go-stations/model"
@@ -22,10 +21,50 @@ func NewTODOHandler(svc *service.TODOService) *TODOHandler {
 	}
 }
 
+func (h *TODOHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// request := &model.CreateTODORequest{}
+	// responce := &model.CreateTODOResponse{}
+
+	//POSTかどうかの判定
+	if r.Method == http.MethodPost {
+		h.Create(w, r)
+	} else {
+		//GETだったとき
+		http.Error(w, "メソッドが許可されていません", http.StatusMethodNotAllowed)
+	}
+
+}
+
 // Create handles the endpoint that creates the TODO.
-func (h *TODOHandler) Create(ctx context.Context, req *model.CreateTODORequest) (*model.CreateTODOResponse, error) {
-	_, _ = h.svc.CreateTODO(ctx, "", "")
-	return &model.CreateTODOResponse{}, nil
+func (h *TODOHandler) Create(w http.ResponseWriter, r *http.Request) {
+	var createRequest model.CreateTODORequest
+	err := json.NewDecoder(r.Body).Decode(&createRequest)
+	if err != nil {
+		http.Error(w, "error", http.StatusBadRequest)
+		return
+	}
+	if createRequest.Subject == "" {
+		http.Error(w, "error", http.StatusBadRequest)
+		return
+	}
+
+	todo, err := h.svc.CreateTODO(r.Context(), createRequest.Subject, createRequest.Description)
+	if err != nil {
+		http.Error(w, "error", http.StatusInternalServerError)
+		return
+	}
+
+	createResponce := model.CreateTODOResponse{TODO: *todo}
+
+	//*なのは渡す側だから、&は入れる側
+	createResponce.TODO = *todo
+	err = json.NewEncoder(w).Encode(createResponce)
+	if err != nil {
+		//サーバーのエラーを返す
+		http.Error(w, "server error", http.StatusInternalServerError)
+		return
+	}
+	// return &model.CreateTODOResponse{}, nil
 }
 
 // Read handles the endpoint that reads the TODOs.
@@ -44,50 +83,4 @@ func (h *TODOHandler) Update(ctx context.Context, req *model.UpdateTODORequest) 
 func (h *TODOHandler) Delete(ctx context.Context, req *model.DeleteTODORequest) (*model.DeleteTODOResponse, error) {
 	_ = h.svc.DeleteTODO(ctx, nil)
 	return &model.DeleteTODOResponse{}, nil
-}
-
-func (h *TODOHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	request := &model.CreateTODORequest{}
-	responce := &model.CreateTODOResponse{}
-
-	//POSTかどうかの判定
-	if r.Method == http.MethodPost {
-		//JSON DECODE
-		err := json.NewDecoder(r.Body).Decode(&request)
-		if err != nil {
-			http.Error(w, "error", http.StatusBadRequest)
-		}
-
-		//subjectが空文字かどうかを判定
-		if request.Subject == "" {
-			//空の場合
-			//400 BadRequestを返却
-			http.Error(w, "error", http.StatusBadRequest)
-		} else {
-			//空ではない場合
-			//(3)をやる(途中)
-			r.Context()
-			//APIを呼び出す
-			//responce =
-
-			//戻ってきたものをエンコード
-			err := json.NewEncoder(w).Encode(&responce)
-			//エラーハンドリング
-			if err != nil {
-				log.Println(err)
-			}
-			//正常終了
-			w.WriteHeader(http.StatusOK)
-		}
-	} else {
-		//GETだったとき
-	}
-
-	// err := json.NewEncoder(w).Encode(responce)
-
-	// //エラーハンドリング
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-
 }
