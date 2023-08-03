@@ -64,7 +64,7 @@ func (h *TODOHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "server error", http.StatusInternalServerError)
 		return
 	}
-	// return &model.CreateTODOResponse{}, nil
+
 }
 
 // Read handles the endpoint that reads the TODOs.

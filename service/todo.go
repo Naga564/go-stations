@@ -97,6 +97,7 @@ func (s *TODOService) UpdateTODO(ctx context.Context, id int64, subject, descrip
 	err = s.db.QueryRowContext(ctx, confirm, id).Scan(&todo.ID, &todo.Subject, &todo.Description, &todo.CreatedAt, &todo.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
+
 			return nil, err
 		}
 		return nil, err
