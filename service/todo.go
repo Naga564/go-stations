@@ -97,8 +97,13 @@ func (s *TODOService) UpdateTODO(ctx context.Context, id int64, subject, descrip
 	err = s.db.QueryRowContext(ctx, confirm, id).Scan(&todo.ID, &todo.Subject, &todo.Description, &todo.CreatedAt, &todo.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
+			//ここでErrNotFoundを返したい
+			// msg := "error"
+			// sqlerr := model.ErrNotFound{msg: *msg}
+			// err := sqlerr.Error()
 
-			return nil, err
+			return nil, nil
+
 		}
 		return nil, err
 	}
